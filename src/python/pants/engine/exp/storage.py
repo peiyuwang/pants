@@ -7,7 +7,9 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 
 import cPickle as pickle
 import cStringIO as StringIO
+import logging
 import sys
+import traceback
 from abc import abstractmethod
 from binascii import hexlify
 from collections import Counter
@@ -23,6 +25,9 @@ from pants.engine.exp.objects import Closable, SerializationError
 from pants.engine.exp.scheduler import StepRequest, StepResult
 from pants.util.dirutil import safe_mkdtemp
 from pants.util.meta import AbstractClass
+
+
+logger = logging.getLogger(__name__)
 
 
 @total_ordering
@@ -203,11 +208,19 @@ class Storage(Closable):
       raise InvalidKeyError('Not a valid key: {}'.format(key))
 
     value = self._contents.get(key.digest)
-    if isinstance(value, six.binary_type):
-      # loads for string-like values
-      return self._assert_type_matches(pickle.loads(value), key.type)
-    # load for file-like value from buffers
-    return self._assert_type_matches(pickle.load(value), key.type)
+    try:
+      if isinstance(value, six.binary_type):
+        # loads for string-like values
+        return self._assert_type_matches(pickle.loads(value), key.type)
+      # load for file-like value from buffers
+      return self._assert_type_matches(pickle.load(value), key.type)
+    except pickle.UnpicklingError:
+      sys.stderr.write(traceback.format_exc())
+      if isinstance(value, six.binary_type):
+        sys.stderr.write('XXX----\n{}\nXXX----\n'.format(hexlify(value)))
+      else:
+        sys.stderr.write('XXX----\n{}\nXXX----\n'.format(hexlify(value.getvalue())))
+      raise
 
   def add_mapping(self, from_key, to_key):
     """Establish one to one relationship from one Key to another Key.
