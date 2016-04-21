@@ -333,7 +333,7 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
           cp.write(fp)
           fp.close()
           coverage_rc = fp.name
-          args = ['-p', 'pants_reporter', '-p', 'pytest_cov', '--cov-config', coverage_rc]
+          args = ['-p', 'pants_reporter', '--cov-config', coverage_rc]
           for module in coverage_modules:
             args.extend(['--cov', module])
           yield args, coverage_rc
