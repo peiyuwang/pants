@@ -219,7 +219,7 @@ class Storage(Closable):
     try:
       unpickled_data = retry_on_exception(unpickle_func, 3, (pickle.UnpicklingError, EOFError,))
       return self._assert_type_matches(unpickled_data, key.type)
-    except pickle.UnpicklingError, EOFError:
+    except (pickle.UnpicklingError, EOFError):
       if isinstance(value, six.binary_type):
         sys.stderr.write('key={}/{}\n{}\n'.format(key, key.type, hexlify(value)))
       else:
