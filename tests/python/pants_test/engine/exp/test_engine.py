@@ -48,7 +48,7 @@ class EngineTest(unittest.TestCase):
     self.assert_engine(engine)
 
   def test_multiprocess_engine_multi(self):
-    for _ in range(10):
+    for _ in range(5):
       self._setUp()
       with self.multiprocessing_engine() as engine:
         self.assert_engine(engine)
@@ -67,7 +67,7 @@ class EngineTest(unittest.TestCase):
         engine.execute(build_request)
 
   def test_rerun_with_cache(self):
-    for _ in range(10):
+    for _ in range(5):
       self._setUp()
       with self.multiprocessing_engine() as engine:
         self.assert_engine(engine)
