@@ -223,8 +223,7 @@ if [[ "${skip_flaky:-false}" == "false" ]]; then
   banner "Running flaky test"
   (
     targets=$(
-      ./pants.pex list tests/python/pants_test/engine/exp:engine | \
-      xargs ./pants.pex --tag='-flaky' filter --filter-type=python_tests
+      ./pants.pex list tests/python/pants_test/engine/exp:engine
     ) && \
     ./pants.pex ${PANTS_ARGS[@]} test.pytest \
       --test-pytest-test-shard=${python_unit_shard} \
