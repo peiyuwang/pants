@@ -217,9 +217,9 @@ class Storage(Closable):
     except pickle.UnpicklingError:
       sys.stderr.write(traceback.format_exc())
       if isinstance(value, six.binary_type):
-        sys.stderr.write('XXX----\n{}\nXXX----\n'.format(hexlify(value)))
+        sys.stderr.write('XXX----\nkey={}/{}\n{}\nXXX----\n'.format(key, key.type, hexlify(value)))
       else:
-        sys.stderr.write('XXX----\n{}\nXXX----\n'.format(hexlify(value.getvalue())))
+        sys.stderr.write('XXX----\nkey={}/{}\n{}\nXXX----\n'.format(key, key.type, hexlify(value.getvalue())))
       raise
 
   def add_mapping(self, from_key, to_key):
