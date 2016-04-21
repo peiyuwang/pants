@@ -10,7 +10,6 @@ import cStringIO as StringIO
 import functools
 import logging
 import sys
-import traceback
 from abc import abstractmethod
 from binascii import hexlify
 from collections import Counter
