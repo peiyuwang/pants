@@ -84,6 +84,7 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
     #   https://github.com/pantsbuild/pants/issues/2566
     PythonRequirement('pytest-timeout<1.0.0'),
     PythonRequirement('pytest-cov==2.2.1'),
+    PythonRequirement('pytest-repeat==0.2'),
     PythonRequirement('unittest2>=0.6.0,<=1.9.0'),
   ]
 

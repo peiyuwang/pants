@@ -17,7 +17,7 @@ from pants.engine.exp.storage import Cache, Storage
 
 
 class EngineTest(unittest.TestCase):
-  def setUp(self):
+  def _setUp(self):
     build_root = os.path.join(os.path.dirname(__file__), 'examples', 'scheduler_inputs')
     self.scheduler, self.storage = setup_json_scheduler(build_root, debug=True)
     self.cache = Cache.create(Storage.create())
@@ -43,46 +43,51 @@ class EngineTest(unittest.TestCase):
       yield e
 
   def test_serial_engine_simple(self):
+    self._setUp()
     engine = LocalSerialEngine(self.scheduler, self.storage, self.cache)
     self.assert_engine(engine)
 
-  @unittest.skip('https://github.com/pantsbuild/pants/issues/3149')
   def test_multiprocess_engine_multi(self):
-    with self.multiprocessing_engine() as engine:
-      self.assert_engine(engine)
+    for _ in range(50):
+      self._setUp()
+      with self.multiprocessing_engine() as engine:
+        self.assert_engine(engine)
 
   def test_multiprocess_engine_single(self):
+    self._setUp()
     with self.multiprocessing_engine(pool_size=1) as engine:
       self.assert_engine(engine)
 
   def test_multiprocess_unpickleable(self):
+    self._setUp()
     build_request = self.request(['unpickleable'], self.java)
 
     with self.multiprocessing_engine() as engine:
       with self.assertRaises(SerializationError):
         engine.execute(build_request)
 
-  @unittest.skip('https://github.com/pantsbuild/pants/issues/3149')
   def test_rerun_with_cache(self):
-    with self.multiprocessing_engine() as engine:
-      self.assert_engine(engine)
+    for _ in range(50):
+      self._setUp()
+      with self.multiprocessing_engine() as engine:
+        self.assert_engine(engine)
 
-      cache_stats = engine._cache.get_stats()
-      # First run all misses.
-      self.assertTrue(cache_stats.hits == 0)
+        cache_stats = engine._cache.get_stats()
+        # First run all misses.
+        self.assertTrue(cache_stats.hits == 0)
 
-      # Save counts for the first run to prepare for another run.
-      max_steps, misses, total = self.scheduler._step_id, cache_stats.misses, cache_stats.total
+        # Save counts for the first run to prepare for another run.
+        max_steps, misses, total = self.scheduler._step_id, cache_stats.misses, cache_stats.total
 
-      self.scheduler.product_graph.invalidate()
-      self.assert_engine(engine)
+        self.scheduler.product_graph.invalidate()
+        self.assert_engine(engine)
 
-      # Second run executes same number of steps, and are all cache hits, no more misses.
-      self.assertEquals(max_steps * 2, self.scheduler._step_id)
-      self.assertEquals(total * 2, cache_stats.total)
-      self.assertEquals(misses, cache_stats.misses)
-      self.assertTrue(cache_stats.hits > 0)
+        # Second run executes same number of steps, and are all cache hits, no more misses.
+        self.assertEquals(max_steps * 2, self.scheduler._step_id)
+        self.assertEquals(total * 2, cache_stats.total)
+        self.assertEquals(misses, cache_stats.misses)
+        self.assertTrue(cache_stats.hits > 0)
 
-      # Ensure we cache no more than what can be cached.
-      for request, result in engine._cache.items():
-        self.assertTrue(request[0].is_cacheable)
+        # Ensure we cache no more than what can be cached.
+        for request, result in engine._cache.items():
+          self.assertTrue(request[0].is_cacheable)
