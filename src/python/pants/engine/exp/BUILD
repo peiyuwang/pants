@@ -131,6 +131,7 @@ python_library(
     ':nodes',
     'src/python/pants/base:specs',
     'src/python/pants/build_graph',
+    'src/python/pants/util:retry',
     'src/python/pants/util:objects',
   ]
 )

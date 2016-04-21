@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 
 import cPickle as pickle
 import cStringIO as StringIO
+import functools
 import logging
 import sys
 import traceback
@@ -25,6 +26,7 @@ from pants.engine.exp.objects import Closable, SerializationError
 from pants.engine.exp.scheduler import StepRequest, StepResult
 from pants.util.dirutil import safe_mkdtemp
 from pants.util.meta import AbstractClass
+from pants.util.retry import retry_on_exception
 
 
 logger = logging.getLogger(__name__)
@@ -208,18 +210,21 @@ class Storage(Closable):
       raise InvalidKeyError('Not a valid key: {}'.format(key))
 
     value = self._contents.get(key.digest)
-    try:
-      if isinstance(value, six.binary_type):
-        # loads for string-like values
-        return self._assert_type_matches(pickle.loads(value), key.type)
+    if isinstance(value, six.binary_type):
+      # loads for string-like values
+      unpickle_func = functools.partial(pickle.loads, value)
+    else:
       # load for file-like value from buffers
-      return self._assert_type_matches(pickle.load(value), key.type)
+      unpickle_func = functools.partial(pickle.load, value)
+
+    try:
+      unpickled_data = retry_on_exception(unpickle_func, 3, (pickle.UnpicklingError,))
+      return self._assert_type_matches(unpickled_data, key.type)
     except pickle.UnpicklingError:
-      sys.stderr.write(traceback.format_exc())
       if isinstance(value, six.binary_type):
-        sys.stderr.write('XXX----\nkey={}/{}\n{}\nXXX----\n'.format(key, key.type, hexlify(value)))
+        sys.stderr.write('key={}/{}\n{}\n'.format(key, key.type, hexlify(value)))
       else:
-        sys.stderr.write('XXX----\nkey={}/{}\n{}\nXXX----\n'.format(key, key.type, hexlify(value.getvalue())))
+        sys.stderr.write('key={}/{}\n{}\n'.format(key, key.type, hexlify(value.getvalue())))
       raise
 
   def add_mapping(self, from_key, to_key):
