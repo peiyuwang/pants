@@ -48,7 +48,7 @@ class EngineTest(unittest.TestCase):
     self.assert_engine(engine)
 
   def test_multiprocess_engine_multi(self):
-    for _ in range(3):
+    for _ in range(2):
       self._setUp()
       with self.multiprocessing_engine(pool_size=64) as engine:
         self.assert_engine(engine)
