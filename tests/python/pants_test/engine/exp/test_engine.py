@@ -67,29 +67,27 @@ class EngineTest(unittest.TestCase):
         engine.execute(build_request)
 
   def test_rerun_with_cache(self):
-    for _ in range(5):
-      self._setUp()
-      with self.multiprocessing_engine() as engine:
-        self.assert_engine(engine)
+    self._setUp()
+    with self.multiprocessing_engine() as engine:
+      self.assert_engine(engine)
 
-        cache_stats = engine._cache.get_stats()
-        # First run all misses.
-        self.assertTrue(cache_stats.hits == 0)
+      cache_stats = engine._cache.get_stats()
+      # First run all misses.
+      self.assertTrue(cache_stats.hits == 0)
 
-        # Save counts for the first run to prepare for another run.
-        max_steps, misses, total = self.scheduler._step_id, cache_stats.misses, cache_stats.total
+      # Save counts for the first run to prepare for another run.
+      max_steps, misses, total = self.scheduler._step_id, cache_stats.misses, cache_stats.total
+      self.scheduler.product_graph.invalidate()
+      self.assert_engine(engine)
 
-        self.scheduler.product_graph.invalidate()
-        self.assert_engine(engine)
+      # Second run executes same number of steps, and are all cache hits, no more misses.
+      self.assertEquals(max_steps * 2, self.scheduler._step_id)
+      self.assertEquals(total * 2, cache_stats.total)
+      # This test is expected to fail for in memory cache because dict is not shared among multiprocess
+      if not isinstance(self.cache._storage._contents, InMemoryDb):
+        self.assertEquals(misses, cache_stats.misses)
+        self.assertTrue(cache_stats.hits > 0)
 
-        # Second run executes same number of steps, and are all cache hits, no more misses.
-        self.assertEquals(max_steps * 2, self.scheduler._step_id)
-        self.assertEquals(total * 2, cache_stats.total)
-        # This test is expected to fail for in memory cache because dict is not shared among multiprocess
-        if not isinstance(self.cache._storage._contents, InMemoryDb):
-          self.assertEquals(misses, cache_stats.misses)
-          self.assertTrue(cache_stats.hits > 0)
-
-        # Ensure we cache no more than what can be cached.
-        for request, result in engine._cache.items():
-          self.assertTrue(request[0].is_cacheable)
+      # Ensure we cache no more than what can be cached.
+      for request, result in engine._cache.items():
+        self.assertTrue(request[0].is_cacheable)
