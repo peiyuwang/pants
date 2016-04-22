@@ -189,7 +189,7 @@ class Storage(Closable):
     self._contents.put(key.digest, blob)
 
     # have to sample travis only allow 4Mb log file
-    if 'SelectNode' in str(key):
+    if '[(SelectNode' in str(key):
       sys.stderr.write('Under: {}\n'.format(key))
       sys.stderr.write('Retrieved back: {}\n'.format(self.get(key)))
     assert self.get(key) == obj
