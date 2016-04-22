@@ -243,16 +243,27 @@ class Storage(Closable):
   def get_mapping(self, from_key):
     """Retrieve the mapping Key from a given Key.
 
-    Noe is returned if the mapping does not exist.
+    None is returned if the mapping does not exist.
     """
     to_key = self._key_mappings.get(key=from_key.digest)
 
     if to_key is None:
       return None
 
-    if isinstance(to_key, six.binary_type):
-      return pickle.loads(to_key)
-    return pickle.load(to_key)
+    try:
+      if isinstance(to_key, six.binary_type):
+        # loads for string-like values
+        unpickled_data = pickle.loads(to_key)
+      else:
+        # load for file-like value from buffers
+        unpickled_data = pickle.load(to_key)
+      return unpickled_data
+    except (pickle.UnpicklingError, EOFError, ValueError):
+      if isinstance(to_key, six.binary_type):
+        sys.stderr.write('get_mapping from_key={} to_key={}\n{}\n'.format(from_key, to_key, hexlify(to_key)))
+      else:
+        sys.stderr.write('get_mapping from_key={} to_key={}\n{}\n'.format(from_key, to_key, hexlify(to_key.getvalue())))
+      raise
 
   def close(self):
     self._contents.close()
