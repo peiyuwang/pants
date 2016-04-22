@@ -5,9 +5,9 @@
 from __future__ import (absolute_import, division, generators, nested_scopes, print_function,
                         unicode_literals, with_statement)
 
-import cPickle as pickle
 import cStringIO as StringIO
 import logging
+import pickle
 import sys
 from abc import abstractmethod
 from binascii import hexlify
@@ -187,8 +187,8 @@ class Storage(Closable):
     self._contents.put(key.digest, blob)
 
     # have to sample travis only allow 4Mb log file
-    if '[(SelectNode' in str(key) or 'Noop' in str(key):
-      sys.stderr.write('Under: {}\n'.format(key))
+    #if '[(SelectNode' in str(key) or 'Noop' in str(key):
+    #  sys.stderr.write('Under: {}\n'.format(key))
     assert self.get(key) == obj
     return key
 
