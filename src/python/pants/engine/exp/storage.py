@@ -187,6 +187,11 @@ class Storage(Closable):
     key = Key.create(blob, type(obj), str(obj) if self._debug else None)
 
     self._contents.put(key.digest, blob)
+
+    sys.stderr.write('Saved: {}\n'.format(obj))
+    sys.stderr.write('Under: {}\n'.format(key))
+    sys.stderr.write('Retrieved back: {}\n'.format(self.get(key)))
+    assert self.get(key) == obj
     return key
 
   def puts(self, objs):

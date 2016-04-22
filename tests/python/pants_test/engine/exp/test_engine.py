@@ -85,7 +85,7 @@ class EngineTest(unittest.TestCase):
         # Second run executes same number of steps, and are all cache hits, no more misses.
         self.assertEquals(max_steps * 2, self.scheduler._step_id)
         self.assertEquals(total * 2, cache_stats.total)
-        # Another issue to fix this test would fail for in memory cache.
+        # This test is expected to fail for in memory cache because dict is not shared among multiprocess
         if not isinstance(self.cache._storage._contents, InMemoryDb):
           self.assertEquals(misses, cache_stats.misses)
           self.assertTrue(cache_stats.hits > 0)
