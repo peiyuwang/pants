@@ -239,6 +239,7 @@ class Storage(Closable):
     """
     self._key_mappings.put(key=from_key.digest,
                            value=pickle.dumps(to_key, protocol=self._protocol))
+    assert to_key == self.get_mapping(from_key)
 
   def get_mapping(self, from_key):
     """Retrieve the mapping Key from a given Key.
