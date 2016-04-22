@@ -204,6 +204,8 @@ class LocalMultiprocessEngine(Engine):
     execute_step = functools.partial(_execute_step, self._maybe_cache_put, debug)
     node_builder = scheduler.node_builder()
     process_initializer = functools.partial(_process_initializer, node_builder, self._storage)
+    import sys
+    sys.stderr.write('pool size = {}'.format(self._pool_size))
     self._pool = StatefulPool(self._pool_size, process_initializer, execute_step)
     self._debug = debug
 
