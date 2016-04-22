@@ -7,7 +7,6 @@ from __future__ import (absolute_import, division, generators, nested_scopes, pr
 
 import cPickle as pickle
 import cStringIO as StringIO
-import functools
 import logging
 import sys
 from abc import abstractmethod
@@ -25,7 +24,6 @@ from pants.engine.exp.objects import Closable, SerializationError
 from pants.engine.exp.scheduler import StepRequest, StepResult
 from pants.util.dirutil import safe_mkdtemp
 from pants.util.meta import AbstractClass
-from pants.util.retry import retry_on_exception
 
 
 logger = logging.getLogger(__name__)
@@ -215,15 +213,14 @@ class Storage(Closable):
       raise InvalidKeyError('Not a valid key: {}'.format(key))
 
     value = self._contents.get(key.digest)
-    if isinstance(value, six.binary_type):
-      # loads for string-like values
-      unpickle_func = functools.partial(pickle.loads, value)
-    else:
-      # load for file-like value from buffers
-      unpickle_func = functools.partial(pickle.load, value)
 
     try:
-      unpickled_data = retry_on_exception(unpickle_func, 3, (pickle.UnpicklingError, EOFError, ValueError))
+      if isinstance(value, six.binary_type):
+        # loads for string-like values
+        unpickled_data = pickle.loads(value)
+      else:
+        # load for file-like value from buffers
+        unpickled_data = pickle.load(value)
       return self._assert_type_matches(unpickled_data, key.type)
     except (pickle.UnpicklingError, EOFError, ValueError):
       if isinstance(value, six.binary_type):
