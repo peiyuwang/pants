@@ -20,7 +20,7 @@ class EngineTest(unittest.TestCase):
   def _setUp(self):
     build_root = os.path.join(os.path.dirname(__file__), 'examples', 'scheduler_inputs')
     self.scheduler, self.storage = setup_json_scheduler(build_root, debug=True)
-    self.cache = Cache.create(Storage.create(in_memory=True))
+    self.cache = Cache.create(Storage.create(in_memory=True, debug=False))
 
     self.java = Address.parse('src/java/codegen/simple')
 
@@ -50,7 +50,7 @@ class EngineTest(unittest.TestCase):
   def test_multiprocess_engine_multi(self):
     for _ in range(5):
       self._setUp()
-      with self.multiprocessing_engine() as engine:
+      with self.multiprocessing_engine(pool_size=16) as engine:
         self.assert_engine(engine)
 
   def test_multiprocess_engine_single(self):
@@ -68,7 +68,7 @@ class EngineTest(unittest.TestCase):
 
   def test_rerun_with_cache(self):
     self._setUp()
-    with self.multiprocessing_engine() as engine:
+    with self.multiprocessing_engine(pool_size=16) as engine:
       self.assert_engine(engine)
 
       cache_stats = engine._cache.get_stats()
