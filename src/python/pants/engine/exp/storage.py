@@ -5,9 +5,9 @@
 from __future__ import (absolute_import, division, generators, nested_scopes, print_function,
                         unicode_literals, with_statement)
 
-import cStringIO as StringIO
+import cPickle as pickle
 import logging
-import pickle
+import StringIO
 import sys
 from abc import abstractmethod
 from binascii import hexlify
