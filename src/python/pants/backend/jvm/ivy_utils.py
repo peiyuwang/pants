@@ -393,6 +393,9 @@ class IvyResolveResult(object):
       return False
     for path in self.resolved_artifact_paths:
       if not os.path.isfile(path):
+        # If not a file, it may not exist or may be a directory, print out details for debugging.
+        logger.debug('linked artifact is not a file: {} (exists={}, isdir={})'
+                     .format(path, os.path.exists(path), os.path.isdir(path)))
         return False
     else:
       return True
