@@ -57,24 +57,19 @@ class JvmDependencyUsage(JvmDependencyAnalyzer):
     register('--output-file', type=str,
              help='Output destination. When unset, outputs to <stdout>.')
     register('--use-cached', type=bool,
+             removal_hint='Use --cache-dep-usage-jvm-read or --cache-dep-usage-jvm-write instead.',
+             removal_version='1.2.0',
              help='Use cached dependency data to compute analysis result. '
-                  'When set, skips `resolve` and `compile` steps. '
                   'Useful for computing analysis for a lot of targets, but '
                   'result can differ from direct execution because cached information '
                   'doesn\'t depend on 3rdparty libraries versions.')
 
   @classmethod
   def prepare(cls, options, round_manager):
-    if not options.use_cached:
-      super(JvmDependencyUsage, cls).prepare(options, round_manager)
-      round_manager.require_data('classes_by_source')
-      round_manager.require_data('runtime_classpath')
-      round_manager.require_data('product_deps_by_src')
-    else:
-      # We want to have synthetic targets in build graph to deserialize nodes properly.
-      round_manager.require_data('java')
-      round_manager.require_data('scala')
-      round_manager.require_data('deferred_sources')
+    super(JvmDependencyUsage, cls).prepare(options, round_manager)
+    round_manager.require_data('classes_by_source')
+    round_manager.require_data('runtime_classpath')
+    round_manager.require_data('product_deps_by_src')
 
   @classmethod
   def skip(cls, options):
@@ -157,14 +152,13 @@ class JvmDependencyUsage(JvmDependencyAnalyzer):
       for vts in invalidation_check.all_vts:
         target_to_vts[vts.target] = vts
 
-      if not self.get_options().use_cached:
-        node_creator = self.calculating_node_creator(
-          self.context.products.get_data('classes_by_source'),
-          self.context.products.get_data('runtime_classpath'),
-          self.context.products.get_data('product_deps_by_src'),
-          target_to_vts)
-      else:
-        node_creator = self.cached_node_creator(target_to_vts)
+      node_creator = self.calculating_node_creator(
+        self.context.products.get_data('classes_by_source'),
+        self.context.products.get_data('runtime_classpath'),
+        self.context.products.get_data('product_deps_by_src'),
+        target_to_vts)
+      if self.get_options().use_cached:
+        node_creator = self.cached_node_creator(target_to_vts, node_creator)
 
       return DependencyUsageGraph(self.create_dep_usage_nodes(targets, node_creator),
                                   self.size_estimators[self.get_options().size_estimator])
@@ -186,7 +180,7 @@ class JvmDependencyUsage(JvmDependencyAnalyzer):
 
     return creator
 
-  def cached_node_creator(self, target_to_vts):
+  def cached_node_creator(self, target_to_vts, uncached_node_creator):
     """Strategy restores dependency graph node from the build cache.
     """
     def creator(target):
@@ -198,10 +192,10 @@ class JvmDependencyUsage(JvmDependencyAnalyzer):
                                             lambda spec: self.context.resolve(spec).__iter__().next())
         except Exception:
           self.context.log.warn("Can't deserialize json for target {}".format(target))
-          return Node(target.concrete_derived_from)
+          return uncached_node_creator(target)
       else:
         self.context.log.warn("No cache entry for {}".format(target))
-        return Node(target.concrete_derived_from)
+        return uncached_node_creator(target)
 
     return creator
 

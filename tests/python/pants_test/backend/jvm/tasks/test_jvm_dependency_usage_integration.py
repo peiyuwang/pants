@@ -54,10 +54,10 @@ class TestJvmDependencyUsageIntegration(PantsRunIntegrationTest):
     target = 'testprojects/src/java/org/pantsbuild/testproject/unicode/main'
     with self.temporary_workdir() as workdir:
       # Should be successful.
-      run_one = self._run_dep_usage(workdir, target, clean_all=True, extra_args=['--dep-usage-jvm-use-cached'])
+      run_one = self._run_dep_usage(workdir, target, clean_all=True, extra_args=['--no-cache-dep-usage-jvm-read'])
       run_two = self._run_dep_usage(workdir, target, clean_all=False)
 
-      self.assertNotEqual(run_one, run_two)
+      self.assertEqual(run_one, run_two)
 
   def test_use_cached_results_should_be_equal_to_direct(self):
     target = 'testprojects/src/java/org/pantsbuild/testproject/unicode/main'
@@ -66,8 +66,7 @@ class TestJvmDependencyUsageIntegration(PantsRunIntegrationTest):
         run_one = self._run_dep_usage(workdir, target, clean_all=True, cachedir=cachedir)
 
       with self.temporary_workdir() as workdir:
-        run_two = self._run_dep_usage(workdir, target, clean_all=True, cachedir=cachedir,
-                                      extra_args=['--dep-usage-jvm-use-cached'])
+        run_two = self._run_dep_usage(workdir, target, clean_all=True, cachedir=cachedir)
 
       # Confirm that usage is non-zero, and that the reports match.
       self._assert_non_zero_usage(run_two)
