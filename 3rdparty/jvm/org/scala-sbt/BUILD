@@ -23,6 +23,7 @@ jar_library(
     scala_jar(org='org.scala-sbt', name='zinc-classpath', rev='1.0.0-X2-SNAPSHOT-ed16a0eab94d0e5e5a8b202762f8dd54c4020dcd',
               url='file:///Users/peiyu/.m2/repository/org/scala-sbt/zinc-classpath_2.10/1.0.0-X2-SNAPSHOT-ed16a0eab94d0e5e5a8b202762f8dd54c4020dcd/zinc-classpath_2.10-1.0.0-X2-SNAPSHOT-ed16a0eab94d0e5e5a8b202762f8dd54c4020dcd.jar',
               mutable=True),
+    jar(org='org.scala-lang', name='scala-compiler', rev='2.10.5'),
   ],
 )
 
