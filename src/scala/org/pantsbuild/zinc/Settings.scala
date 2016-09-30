@@ -136,8 +136,12 @@ case class IncOptions(
       classfileManager(log),
       o2m(recompileOnMacroDef.map(java.lang.Boolean.valueOf)),
       true, // nameHashing
+      defaultIncOptions.storeApis,
       false, // antStyle
-      Map.empty.asJava // extra
+      Map.empty.asJava, // extra
+      defaultIncOptions.logRecompileOnMacro,
+      defaultIncOptions.externalHooks,
+      defaultIncOptions.analysisOnlyExtDepLookup
     )
   }
 
