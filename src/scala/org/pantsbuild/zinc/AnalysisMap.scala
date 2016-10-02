@@ -10,7 +10,8 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import xsbti.Maybe
 import xsbti.compile.{CompileAnalysis, DefinesClass, MiniSetup, PerClasspathEntryLookup}
-import sbt.internal.inc.Locate
+import sbt.internal.inc.{ Locate, TextAnalysisFormat }
+import sbt.io.{IO, Using}
 import sbt.util.Logger
 import sbt.util.Logger.{m2o, o2m}
 import org.pantsbuild.zinc.cache.{Cache, FileFPrint}
@@ -133,12 +134,16 @@ object SafeFileBasedStore {
   def apply(file: File): AnalysisStore = new AnalysisStore {
     def set(analysis: CompileAnalysis, setup: MiniSetup) {
       val tmpAnalysisFile = File.createTempFile(file.getName, ".tmp")
-      val analysisStore = FileBasedStore(tmpAnalysisFile)
-      analysisStore.set(analysis, setup)
+      Using.fileWriter(IO.utf8)(tmpAnalysisFile) { writer => TextAnalysisFormat
+        .write(writer, analysis, setup)
+      }
       Files.move(tmpAnalysisFile.toPath, file.toPath, StandardCopyOption.REPLACE_EXISTING)
     }
 
-    def get(): Option[(CompileAnalysis, MiniSetup)] =
-      FileBasedStore(file).get
+    def get(): Option[(CompileAnalysis, MiniSetup)] = try
+      Some(Using.fileReader(IO.utf8)(file) { reader => TextAnalysisFormat.read(reader, null) })
+    catch {
+      case _: Throwable => None
+    }
   }
 }

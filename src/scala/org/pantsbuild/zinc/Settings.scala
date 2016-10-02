@@ -136,7 +136,7 @@ case class IncOptions(
       classfileManager(log),
       o2m(recompileOnMacroDef.map(java.lang.Boolean.valueOf)),
       true, // nameHashing
-      defaultIncOptions.storeApis,
+      false, // storeApis, apis is stored separately after 1.0.0
       false, // antStyle
       Map.empty.asJava, // extra
       defaultIncOptions.logRecompileOnMacro,
