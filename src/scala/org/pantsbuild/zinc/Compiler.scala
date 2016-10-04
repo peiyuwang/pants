@@ -13,6 +13,7 @@ import sbt.internal.inc.{
   CompilerInterfaceProvider,
   IncrementalCompilerImpl,
   RawCompiler,
+  ScalaInstance,
   javac
 }
 import sbt.io.Path
@@ -25,7 +26,7 @@ import xsbti.compile.{
   GlobalsCache,
   IncrementalCompiler,
   JavaCompiler,
-  ScalaInstance
+  ScalaInstance => XScalaInstance
 }
 
 import org.pantsbuild.zinc.cache.Cache
@@ -72,7 +73,7 @@ object Compiler {
   /**
    * Create a new scala compiler.
    */
-  def newScalaCompiler(instance: ScalaInstance, interfaceJar: File): AnalyzingCompiler =
+  def newScalaCompiler(instance: XScalaInstance, interfaceJar: File): AnalyzingCompiler =
     new AnalyzingCompiler(
       instance,
       CompilerInterfaceProvider.constant(interfaceJar),
@@ -82,7 +83,7 @@ object Compiler {
   /**
    * Create a new java compiler.
    */
-  def newJavaCompiler(instance: ScalaInstance, javaHome: Option[File], fork: Boolean): JavaCompiler =
+  def newJavaCompiler(instance: XScalaInstance, javaHome: Option[File], fork: Boolean): JavaCompiler =
     if (fork || javaHome.isDefined) {
       javac.JavaCompiler.fork(javaHome)
     } else {
@@ -103,16 +104,12 @@ object Compiler {
   /**
    * Create the scala instance for the compiler. Includes creating the classloader.
    */
-  def scalaInstance(setup: Setup): ScalaInstance = {
+  def scalaInstance(setup: Setup): XScalaInstance = {
     import setup.{scalaCompiler, scalaExtra, scalaLibrary}
-    val loader = scalaLoader(scalaLibrary +: scalaCompiler +: scalaExtra)
+    val allJars = scalaLibrary +: scalaCompiler +: scalaExtra
+    val loader = scalaLoader(allJars)
     val version = scalaVersion(loader)
-    new sbt.internal.inc.ScalaInstance(version.getOrElse("unknown"),
-                                       loader,
-                                       scalaLibrary,
-                                       scalaCompiler,
-                                       scalaExtra.toArray,
-                                       version)
+    new ScalaInstance(version.getOrElse("unknown"), loader, scalaLibrary, scalaCompiler, allJars.toArray, version)
   }
 
   /**
@@ -138,7 +135,7 @@ object Compiler {
    * multiple zinc processes (ie, without nailgun) we need to be more careful not to clobber
    * another compilation attempt.
    */
-  def compilerInterface(setup: Setup, scalaInstance: ScalaInstance, log: Logger): File = {
+  def compilerInterface(setup: Setup, scalaInstance: XScalaInstance, log: Logger): File = {
     def compile(targetJar: File): Unit =
       AnalyzingCompiler.compileSources(
         Seq(setup.compilerBridgeSrc),
