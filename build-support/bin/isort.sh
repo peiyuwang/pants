@@ -4,6 +4,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd ${REPO_ROOT}
 
 source build-support/common.sh
+env
+set -x
 
 function usage() {
   echo "Checks import sort order for python files, optionally fixing incorrect"
