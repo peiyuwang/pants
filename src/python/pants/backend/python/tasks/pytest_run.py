@@ -79,11 +79,11 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
     # Note: the requirement restrictions on pytest and pytest-cov match those in requirements.txt,
     # to avoid confusion when debugging pants tests.
     # TODO: make these an option, so any pants install base can pick their pytest version.
-    PythonRequirement('pytest==2.8.0'),
+    PythonRequirement('pytest==2.9.2'),
     # NB, pytest-timeout 1.0.0 introduces a conflicting pytest>=2.8.0 requirement, see:
     #   https://github.com/pantsbuild/pants/issues/2566
-    PythonRequirement('pytest-timeout<1.0.0'),
-    PythonRequirement('pytest-cov==2.0.0'),
+    PythonRequirement('pytest-timeout==1.0.0'),
+    PythonRequirement('pytest-cov==2.3.0'),
     PythonRequirement('unittest2>=0.6.0,<=1.9.0'),
   ]
 
