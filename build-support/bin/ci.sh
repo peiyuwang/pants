@@ -212,10 +212,10 @@ if [[ "${skip_integration:-false}" == "false" ]]; then
   banner "Running Pants Integration tests${shard_desc}"
   (
     targets=$(
-      ./pants list tests/python:: | \
+      ./pants list tests/python/pants_test/backend/jvm/tasks/jvm_compile/zinc: | \
       xargs ./pants --tag='+integration' filter --filter-type=python_tests
     ) && \
-    ./pants ${PANTS_ARGS[@]} test.pytest --test-pytest-test-shard=${python_intg_shard} ${targets}
+    ./pants ${PANTS_ARGS[@]} test.pytest --test-pytest-test-shard=${python_intg_shard} ${targets} -- -v
   ) || die "Pants Integration test failure"
 fi
 
