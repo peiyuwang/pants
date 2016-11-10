@@ -54,7 +54,7 @@ class ZincAnalysisParser(object):
     self._verify_version(infile)
 
     def path_to_class(path):
-      return path.split('/current/classes/')[1].replace('.class', '').replace('/', '.')
+      return path.split('/current/classes/')[1].replace('.class', '').replace('/', '.').replace('$', '.')
     class_to_sources = {}
     for src, paths in self._find_repeated_at_header(infile, b'products').items():
       for path in paths:
