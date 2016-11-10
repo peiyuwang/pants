@@ -7,6 +7,8 @@ set -o pipefail
 REPO_ROOT=$(cd $(dirname "${BASH_SOURCE[0]}") && cd "$(git rev-parse --show-toplevel)" && pwd)
 cd ${REPO_ROOT}
 
+find ~/.cache/pants
+
 source build-support/common.sh
 
 function usage() {
