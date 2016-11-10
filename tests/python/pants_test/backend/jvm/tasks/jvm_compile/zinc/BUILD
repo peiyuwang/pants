@@ -17,7 +17,7 @@ python_tests(
     ':zinc_compile_integration_base',
     'tests/python/pants_test/backend/jvm/tasks/jvm_compile:base_compile_integration_test',
   ],
-  timeout = 240,
+  timeout = 2400,
   tags = {'integration'},
 )
 
@@ -28,6 +28,6 @@ python_tests(
     ':zinc_compile_integration_base',
     'tests/python/pants_test/backend/jvm/tasks/jvm_compile:base_compile_integration_test',
   ],
-  timeout = 240,
+  timeout = 2400,
   tags = {'integration'},
 )

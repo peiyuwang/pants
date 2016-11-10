@@ -151,6 +151,7 @@ class PantsRunIntegrationTest(unittest.TestCase):
       '--pants-workdir={}'.format(workdir),
       '--kill-nailguns',
       '--print-exception-stacktrace',
+      '-ldebug',
     ]
 
     if self.hermetic():

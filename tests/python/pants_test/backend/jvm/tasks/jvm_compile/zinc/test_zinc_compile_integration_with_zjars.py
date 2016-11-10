@@ -13,7 +13,7 @@ from pants_test.backend.jvm.tasks.jvm_compile.zinc.zinc_compile_integration_base
 class ZincCompileIntegrationWithZjars(BaseCompileIT, BaseZincCompileIntegrationTest):
   _EXTRA_TASK_ARGS = ['--compile-zinc-use-classpath-jars']
 
-  def test_classpath_includes_jars_when_use_jars_enabled(self):
+  def no_test_classpath_includes_jars_when_use_jars_enabled(self):
     target_spec = 'examples/src/java/org/pantsbuild/example/hello/main'
     classpath_filename = 'examples.src.java.org.pantsbuild.example.hello.main.main-bin.txt'
 
