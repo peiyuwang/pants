@@ -218,7 +218,9 @@ if [[ "${skip_integration:-false}" == "false" ]]; then
       xargs ./pants --tag='+integration' filter --filter-type=python_tests
     ) && \
     ./pants ${PANTS_ARGS[@]} test.pytest --test-pytest-test-shard=${python_intg_shard} ${targets} -- -v
-  ) || die "Pants Integration test failure"
+  )
 fi
+
+find ~/.cache/pants
 
 banner "CI SUCCESS"
