@@ -211,6 +211,8 @@ if [[ "${skip_integration:-false}" == "false" ]]; then
   fi
   banner "Running Pants Integration tests${shard_desc}"
   (
+    # Ensure zinc is bootstrapped and shaded artifact is cached before running any BaseCompileIT.
+    ./pants filter examples/src/:: --filter-type=scala_library|head -n 1|xargs ./pants clean-all compile
     targets=$(
       ./pants list tests/python:: | \
       xargs ./pants --tag='+integration' filter --filter-type=python_tests
