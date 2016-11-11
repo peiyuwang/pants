@@ -212,6 +212,7 @@ if [[ "${skip_integration:-false}" == "false" ]]; then
     shard_desc=" [shard ${python_intg_shard}]"
   fi
   banner "Running Pants Integration tests${shard_desc}"
+  ./pants compile src/scala/org/pantsbuild/zinc/logging:logging
   (
     targets=$(
       ./pants list tests/python/pants_test/backend/jvm/tasks/jvm_compile/zinc: | \
