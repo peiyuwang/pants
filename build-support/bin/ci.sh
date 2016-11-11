@@ -7,6 +7,8 @@ set -o pipefail
 REPO_ROOT=$(cd $(dirname "${BASH_SOURCE[0]}") && cd "$(git rev-parse --show-toplevel)" && pwd)
 cd ${REPO_ROOT}
 
+find ~/.cache/pants
+
 source build-support/common.sh
 
 function usage() {
@@ -212,11 +214,13 @@ if [[ "${skip_integration:-false}" == "false" ]]; then
   banner "Running Pants Integration tests${shard_desc}"
   (
     targets=$(
-      ./pants list tests/python:: | \
+      ./pants list tests/python/pants_test/backend/jvm/tasks/jvm_compile/zinc: | \
       xargs ./pants --tag='+integration' filter --filter-type=python_tests
     ) && \
-    ./pants ${PANTS_ARGS[@]} test.pytest --test-pytest-test-shard=${python_intg_shard} ${targets}
-  ) || die "Pants Integration test failure"
+    ./pants ${PANTS_ARGS[@]} test.pytest --test-pytest-test-shard=${python_intg_shard} ${targets} -- -v
+  )
 fi
+
+find ~/.cache/pants
 
 banner "CI SUCCESS"
