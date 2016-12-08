@@ -14,8 +14,14 @@ jar_library(
   jars=[
     # TODO: `zinc` only declares a dep on the `tests` classifier for
     # util-logging for some reason. We redefine the dep here to get the full package.
-    scala_jar(org='org.scala-sbt', name='util-logging', rev='0.1.0-M15', force=True),
+    scala_jar(org='org.scala-sbt', name='util-logging', rev='0.1.0-M15', force=True,
+              excludes=[
+                exclude(org='org.scala-sbt', name='util-interface'),
+              ]),
   ],
+  dependencies=[
+    ':util-interface',
+  ]
 )
 
 jar_library(
@@ -24,5 +30,12 @@ jar_library(
     # TODO: `zinc` only declares a dep on the `tests` classifier for
     # io. We redefine the dep here to get the full package.
     scala_jar(org='org.scala-sbt', name='io', rev='1.0.0-M7', force=True),
+  ],
+)
+
+jar_library(
+  name='util-interface',
+  jars=[
+    jar(org='org.scala-sbt', name='util-interface', rev='0.1.0-M15', force=True),
   ],
 )
