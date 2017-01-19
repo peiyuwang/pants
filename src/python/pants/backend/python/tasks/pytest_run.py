@@ -174,7 +174,7 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
         yield []
         return
 
-      with temporary_dir() as tmp:
+      with temporary_dir(cleanup=False) as tmp:
         path = os.path.join(tmp, 'conftest.py')
         with open(path, 'w') as fp:
           fp.write(dedent("""
@@ -183,17 +183,20 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
 
 
             def pytest_collection_modifyitems(session, config, items):
+              reporter = config.pluginmanager.getplugin('terminalreporter')
               total_count = len(items)
+              reporter.write_line('all items = {{}}\\n\\n'.format(','.join([x.name for x in items])))
               removed = 0
               for i, item in enumerate(list(items)):
                 if i % {nshards} != {shard}:
                   del items[i - removed]
                   removed += 1
-              reporter = config.pluginmanager.getplugin('terminalreporter')
+              reporter.write_line('remaining = {{}}\\n\\n'.format(','.join([x.name for x in items])))
               reporter.write_line('Only executing {{}} of {{}} total tests in shard {shard} of '
                                   '{nshards}'.format(total_count - removed, total_count),
                                   bold=True, invert=True, yellow=True)
           """.format(shard=sharder.shard, nshards=sharder.nshards)))
+        print('path={}'.format(path))
         yield [path]
     except Sharder.InvalidShardSpec as e:
       raise self.InvalidShardSpecification(e)
@@ -541,7 +544,7 @@ class PytestRun(TestRunnerTaskMixin, PythonTask):
     # NB: We don't use pex.run(...) here since it makes a point of running in a clean environment,
     # scrubbing all `PEX_*` environment overrides and we use overrides when running pexes in this
     # task.
-
+    logger.warn('Running command: {} {}'.format(pex._pex, ' '.join(args)))
     process = subprocess.Popen(pex.cmdline(args),
                                preexec_fn=os.setsid if setsid else None,
                                stdout=workunit.output('stdout'),
