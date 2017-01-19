@@ -130,3 +130,6 @@ class MutableBuildGraph(BuildGraph):
     else:
       _, addressable = self._address_mapper.resolve(address)
       return addressable
+
+  def fork(self):
+    return MutableBuildGraph(self._address_mapper)
