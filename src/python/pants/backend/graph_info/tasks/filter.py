@@ -5,7 +5,6 @@
 from __future__ import (absolute_import, division, generators, nested_scopes, print_function,
                         unicode_literals, with_statement)
 
-import random
 import re
 
 from pants.backend.graph_info.tasks.target_filter_task_mixin import TargetFilterTaskMixin
@@ -100,13 +99,8 @@ class Filter(TargetFilterTaskMixin, ConsoleTask):
   def console_output(self, _):
     wrapped_filter = wrap_filters(self._filters)
     filtered = set()
-    targets = []
     for target in self.context.target_roots:
       if target not in filtered:
         filtered.add(target)
         if wrapped_filter(target):
-          targets.append(target.address.spec)
-
-    random.shuffle(targets)
-    for target in targets:
-      yield target
+          yield target.address.spec
