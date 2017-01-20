@@ -16,6 +16,10 @@ class StrictDepsInvalidationIntegrationTest(PantsRunIntegrationTest):
 
   TEST_SRC = 'testprojects/tests/java/org/pantsbuild/testproject/strictdeps'
 
+  @classmethod
+  def hermetic(cls):
+    return True
+
   def modify_transitive_deps_and_compile(self, target_name, invalidate_root_target_expected, *extra_args):
     with self.temporary_sourcedir() as tmp_src:
       src_dir = os.path.relpath(os.path.join(tmp_src, os.path.basename(self.TEST_SRC)), get_buildroot())
