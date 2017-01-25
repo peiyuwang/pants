@@ -9,6 +9,7 @@ import os
 import sqlite3
 from contextlib import contextmanager
 
+from pants.base.build_environment import get_buildroot
 from pants.subsystem.subsystem import Subsystem
 from pants.util.dirutil import safe_mkdir_for
 
@@ -23,7 +24,7 @@ class StatsDBFactory(Subsystem):
   def register_options(cls, register):
     super(StatsDBFactory, cls).register_options(register)
     register('--path',
-             default=os.path.join(register.bootstrap.pants_bootstrapdir, 'stats', 'statsdb.sqlite'),
+             default=os.path.join(get_buildroot(), '.statsdb.sqlite'),
              help='Location of statsdb file.')
 
   def get_db(self):

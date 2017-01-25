@@ -29,6 +29,7 @@
 .factorypath
 .python
 .pydevproject
+.statsdb.sqlite
 build/
 codegen/classes/
 htmlcov/
