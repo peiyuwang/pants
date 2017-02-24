@@ -50,6 +50,14 @@ class TargetAdaptor(StructWithDeps):
       path_globs, excluded_path_globs = base_globs.to_path_globs(self.address.spec_path)
       return (SourcesField(self.address, 'sources', base_globs.filespecs, path_globs, excluded_path_globs),)
 
+  @property
+  def default_sources_globs(self):
+    return None
+
+  @property
+  def default_sources_exclude_globs(self):
+    return None
+
 
 class Field(object):
   """A marker for Target(Adaptor) fields for which the engine might perform extra construction."""
@@ -86,6 +94,42 @@ class SourcesField(datatype('SourcesField', ['address', 'arg', 'filespecs', 'pat
 
   def __str__(self):
     return 'SourcesField(address={}, arg={}, filespecs={!r})'.format(self.address, self.arg, self.filespecs)
+
+
+class JavaLibraryAdaptor(TargetAdaptor):
+  """TODO"""
+
+  @property
+  def default_sources_globs(self):
+    return '*.java'
+
+  @property
+  def default_sources_exclude_globs(self):
+    return JunitTestsAdaptor.java_test_globs
+
+
+class ScalaLibraryAdaptor(TargetAdaptor):
+  """TODO"""
+
+  @property
+  def default_sources_globs(self):
+    return '*.scala'
+
+
+  @property
+  def default_sources_exclude_globs(self):
+    return JunitTestsAdaptor.scala_test_globs
+
+
+class JunitTestsAdaptor(TargetAdaptor):
+  """TODO"""
+
+  java_test_globs = ('*Test.java',)
+  scala_test_globs = ('*Test.scala', '*Spec.scala')
+
+  @property
+  def default_sources_globs(self):
+    return self.java_test_globs + self.scala_test_globs
 
 
 class BundlesField(datatype('BundlesField', ['address', 'bundles', 'filespecs_list', 'path_globs_list', 'excluded_path_globs_list']), Field):
@@ -181,6 +225,26 @@ class PythonTargetAdaptor(TargetAdaptor):
                                    path_globs,
                                    excluded_path_globs)
       return field_adaptors + (sources_field,)
+
+
+class PythonLibraryAdaptor(PythonTargetAdaptor):
+  """TODO"""
+
+  @property
+  def default_sources_globs(self):
+    return '*.py'
+
+  @property
+  def default_sources_exclude_globs(self):
+    return PythonTestsAdaptor.default_sources_globs
+
+
+class PythonTestsAdaptor(PythonTargetAdaptor):
+  """TODO"""
+
+  @property
+  def default_sources_globs(self):
+    return ('test_*.py', '*_test.py')
 
 
 class BaseGlobs(Locatable, AbstractClass):
