@@ -41,7 +41,9 @@ class TargetAdaptor(StructWithDeps):
     sources = getattr(self, 'sources', None)
     if not sources:
       if self.default_sources_globs:
-        return Globs(self.default_sources_globs, exclude=Globs(self.default_sources_exclude_globs or ()))
+        return Globs(self.default_sources_globs,
+                     spec_path=self.address.spec_path,
+                     exclude=Globs(self.default_sources_exclude_globs or ()))
       return None
     return sources
 
