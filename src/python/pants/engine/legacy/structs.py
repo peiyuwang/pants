@@ -43,7 +43,8 @@ class TargetAdaptor(StructWithDeps):
       if self.default_sources_globs:
         return Globs(self.default_sources_globs,
                      spec_path=self.address.spec_path,
-                     exclude=Globs(self.default_sources_exclude_globs or ()))
+                     exclude=Globs(self.default_sources_exclude_globs or (),
+                                   spec_path=self.address.spec_path))
     return sources
 
 
