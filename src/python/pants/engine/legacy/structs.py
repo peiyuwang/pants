@@ -41,7 +41,7 @@ class TargetAdaptor(StructWithDeps):
     sources = getattr(self, 'sources', None)
     if not sources:
       if self.default_sources_globs:
-        return Globs(self.default_sources_globs,
+        return Globs(*self.default_sources_globs,
                      spec_path=self.address.spec_path,
                      exclude=[self.default_sources_exclude_globs])
     return sources
@@ -108,7 +108,7 @@ class JavaLibraryAdaptor(TargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return '*.java'
+    return ('*.java',)
 
   @property
   def default_sources_exclude_globs(self):
@@ -119,7 +119,7 @@ class ScalaLibraryAdaptor(TargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return '*.scala'
+    return ('*.scala',)
 
 
   @property
@@ -129,7 +129,7 @@ class ScalaLibraryAdaptor(TargetAdaptor):
 
 class JunitTestsAdaptor(TargetAdaptor):
 
-  java_test_globs = '*Test.java'
+  java_test_globs = ('*Test.java',)
   scala_test_globs = ('*Test.scala', '*Spec.scala')
 
   @property
@@ -236,7 +236,7 @@ class PythonLibraryAdaptor(PythonTargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return '*.py'
+    return ('*.py',)
 
   @property
   def default_sources_exclude_globs(self):
