@@ -43,8 +43,7 @@ class TargetAdaptor(StructWithDeps):
       if self.default_sources_globs:
         return Globs(self.default_sources_globs,
                      spec_path=self.address.spec_path,
-                     exclude=Globs(self.default_sources_exclude_globs or (),
-                                   spec_path=self.address.spec_path))
+                     exclude=[self.default_sources_exclude_globs])
     return sources
 
 
@@ -53,11 +52,11 @@ class TargetAdaptor(StructWithDeps):
     """Returns a tuple of Fields for captured fields which need additional treatment."""
     with exception_logging(logger, 'Exception in `field_adaptors` property'):
       sources = self.get_sources()
-      if sources:
-        base_globs = BaseGlobs.from_sources_field(sources, self.address.spec_path)
-        path_globs, excluded_path_globs = base_globs.to_path_globs(self.address.spec_path)
-        return (SourcesField(self.address, 'sources', base_globs.filespecs, path_globs, excluded_path_globs),)
-      return tuple()
+      if not sources:
+        return tuple()
+      base_globs = BaseGlobs.from_sources_field(sources, self.address.spec_path)
+      path_globs, excluded_path_globs = base_globs.to_path_globs(self.address.spec_path)
+      return (SourcesField(self.address, 'sources', base_globs.filespecs, path_globs, excluded_path_globs),)
 
   @property
   def default_sources_globs(self):
@@ -109,7 +108,7 @@ class JavaLibraryAdaptor(TargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return ('*.java',)
+    return '*.java'
 
   @property
   def default_sources_exclude_globs(self):
@@ -120,7 +119,7 @@ class ScalaLibraryAdaptor(TargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return ('*.scala',)
+    return '*.scala'
 
 
   @property
@@ -130,7 +129,7 @@ class ScalaLibraryAdaptor(TargetAdaptor):
 
 class JunitTestsAdaptor(TargetAdaptor):
 
-  java_test_globs = ('*Test.java',)
+  java_test_globs = '*Test.java'
   scala_test_globs = ('*Test.scala', '*Spec.scala')
 
   @property
@@ -237,7 +236,7 @@ class PythonLibraryAdaptor(PythonTargetAdaptor):
 
   @property
   def default_sources_globs(self):
-    return ('*.py',)
+    return '*.py'
 
   @property
   def default_sources_exclude_globs(self):
