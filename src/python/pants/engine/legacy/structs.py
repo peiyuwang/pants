@@ -97,7 +97,6 @@ class SourcesField(datatype('SourcesField', ['address', 'arg', 'filespecs', 'pat
 
 
 class JavaLibraryAdaptor(TargetAdaptor):
-  """TODO"""
 
   @property
   def default_sources_globs(self):
@@ -109,7 +108,6 @@ class JavaLibraryAdaptor(TargetAdaptor):
 
 
 class ScalaLibraryAdaptor(TargetAdaptor):
-  """TODO"""
 
   @property
   def default_sources_globs(self):
@@ -122,7 +120,6 @@ class ScalaLibraryAdaptor(TargetAdaptor):
 
 
 class JunitTestsAdaptor(TargetAdaptor):
-  """TODO"""
 
   java_test_globs = ('*Test.java',)
   scala_test_globs = ('*Test.scala', '*Spec.scala')
@@ -228,7 +225,6 @@ class PythonTargetAdaptor(TargetAdaptor):
 
 
 class PythonLibraryAdaptor(PythonTargetAdaptor):
-  """TODO"""
 
   @property
   def default_sources_globs(self):
@@ -240,7 +236,6 @@ class PythonLibraryAdaptor(PythonTargetAdaptor):
 
 
 class PythonTestsAdaptor(PythonTargetAdaptor):
-  """TODO"""
 
   @property
   def default_sources_globs(self):
