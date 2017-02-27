@@ -56,7 +56,7 @@ class LegacySymbolTable(SymbolTable):
       aliases[alias] = JavaLibraryAdaptor
     for alias in ['scala_library', 'scalac_plugin']:
       aliases[alias] = ScalaLibraryAdaptor
-    for alias in ['python_library', 'pants_plugin', 'contrib_plugin']:
+    for alias in ['python_library', 'pants_plugin']:
       aliases[alias] = PythonLibraryAdaptor
 
     aliases['junit_tests'] = JunitTestsAdaptor

@@ -240,14 +240,16 @@ class PythonLibraryAdaptor(PythonTargetAdaptor):
 
   @property
   def default_sources_exclude_globs(self):
-    return PythonTestsAdaptor.default_sources_globs
+    return PythonTestsAdaptor.python_test_globs
 
 
 class PythonTestsAdaptor(PythonTargetAdaptor):
 
+  python_test_globs = ('test_*.py', '*_test.py')
+
   @property
   def default_sources_globs(self):
-    return ('test_*.py', '*_test.py')
+    return self.python_test_globs
 
 
 class BaseGlobs(Locatable, AbstractClass):
