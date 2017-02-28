@@ -68,3 +68,8 @@ python_library(
                 ),
   dependencies=[]
 )
+
+python_library(
+  name='implicit_sources',
+  dependencies=[]
+)

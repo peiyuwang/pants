@@ -14,7 +14,8 @@ from pants_test.pants_run_integration_test import PantsRunIntegrationTest
 class FilemapIntegrationTest(PantsRunIntegrationTest):
   PATH_PREFIX = 'testprojects/tests/python/pants/file_sets/'
   TEST_EXCLUDE_FILES = {
-    'a.py', 'aa.py', 'aaa.py', 'ab.py', 'aabb.py', 'dir1/a.py', 'dir1/aa.py', 'dir1/aaa.py',
+    'a.py', 'aa.py', 'aaa.py', 'ab.py', 'aabb.py', 'test_a.py',
+    'dir1/a.py', 'dir1/aa.py', 'dir1/aaa.py',
     'dir1/ab.py', 'dir1/aabb.py', 'dir1/dirdir1/a.py', 'dir1/dirdir1/aa.py', 'dir1/dirdir1/ab.py'
   }
 
@@ -96,4 +97,9 @@ class FilemapIntegrationTest(PantsRunIntegrationTest):
     test_out = self._extract_exclude_output('exclude_composite')
     self.assertEquals(self.TEST_EXCLUDE_FILES -
                       {'a.py', 'aaa.py', 'dir1/a.py', 'dir1/dirdir1/a.py'},
+                      test_out)
+
+  def test_implicit_sources(self):
+    test_out = self._extract_exclude_output('implicit_sources')
+    self.assertEquals({'a.py', 'aa.py', 'aaa.py', 'aabb.py', 'ab.py'},
                       test_out)
