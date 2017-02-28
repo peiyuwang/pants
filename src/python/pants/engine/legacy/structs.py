@@ -46,7 +46,6 @@ class TargetAdaptor(StructWithDeps):
                      exclude=self.default_sources_exclude_globs or [])
     return sources
 
-
   @property
   def field_adaptors(self):
     """Returns a tuple of Fields for captured fields which need additional treatment."""
@@ -120,7 +119,6 @@ class ScalaLibraryAdaptor(TargetAdaptor):
   @property
   def default_sources_globs(self):
     return ('*.scala',)
-
 
   @property
   def default_sources_exclude_globs(self):
