@@ -3,16 +3,14 @@
 
 package org.pantsbuild.example
 
-import org.pantsbuild.example.hello.welcome.WelcomeEverybody
-
-// A simple jvm binary to test the jvm_run task on. Try, e.g.,
-// ./pants -ldebug run --jvm-run-jvm-options='-Dfoo=bar' --jvm-run-jvm-program-args="Foo Bar" \\
-//   examples/src/scala/org/pantsbuild/example:jvm-run-example
-
-
 object JvmRunExample {
-  def main(args: Array[String]) {
-    println("Hello, World")
-    println(WelcomeEverybody(args).mkString(", "))
-  }
+}
+
+trait J
+
+trait JvmRunExample
+  extends J
+  with scala.Product2[String, Option[org.pantsbuild.example.hello.welcome.Welcome]]
+  with java.io.Serializable
+{
 }

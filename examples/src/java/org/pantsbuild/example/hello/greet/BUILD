@@ -12,3 +12,8 @@ java_library(
                       name='hello-greet',
                       repo=public,),
 )
+scala_library(
+  name='greet-scala',
+  dependencies = [], # A more realistic example would depend on other libs,
+                     # but this "hello world" is pretty simple.
+)
