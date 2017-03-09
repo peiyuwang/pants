@@ -13,6 +13,16 @@ java_thrift_library(name='precipitation-java',
                       repo=public),
 )
 
+java_thrift_library(name='precipitation-scala',
+  sources=['precipitation.thrift'],
+  compiler='scrooge',
+  language='scala',
+  rpc_style='finagle',
+  dependencies=[
+    'examples/src/thrift/org/pantsbuild/example/distance:distance-scala',
+  ],
+)
+
 python_thrift_library(name='precipitation-python',
   sources=['precipitation.thrift'],
   dependencies=[

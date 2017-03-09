@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0 (see LICENSE).
 
 namespace java org.pantsbuild.example.precipitation.thriftjava
+#@namespace scala org.pantsbuild.example.precipitation.thriftscala
 namespace py org.pantsbuild.example.precipitation
 
 include "org/pantsbuild/example/distance/distance.thrift"

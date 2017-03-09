@@ -11,6 +11,13 @@ java_thrift_library(name='distance-java',
                       repo=public),
 )
 
+java_thrift_library(name='distance-scala',
+  sources=['distance.thrift'],
+  compiler='scrooge',
+  language='scala',
+  rpc_style='finagle',
+)
+
 python_thrift_library(name='distance-python',
   sources=['distance.thrift'],
   provides=setup_py(

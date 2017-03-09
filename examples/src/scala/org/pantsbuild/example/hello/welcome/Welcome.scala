@@ -3,7 +3,7 @@
 
 package org.pantsbuild.example.hello.welcome
 
-import org.pantsbuild.example.hello.greet.Greeting
+//import org.pantsbuild.example.hello.greet.Greeting
 
 // Welcome a collection of things.
 //   Given a seq of strings, return a seq of greetings for each of them
@@ -11,6 +11,8 @@ import org.pantsbuild.example.hello.greet.Greeting
 
 object WelcomeEverybody {
   def apply(everybody: Seq[String]): Seq[String] = {
-    everybody.map(x => Greeting.greet(x))
+  	var greeting: Option[org.pantsbuild.example.hello.greet.Greeting] = None
+  	val greetingFieldManifest = implicitly[Manifest[org.pantsbuild.example.hello.greet.Greeting]]
+    everybody.map(x => org.pantsbuild.example.hello.greet.Greeting.greet(x))
   }
 }
